@@ -1,26 +1,195 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-base: #05070d;
+  --bg-elevated: #0b0f1a;
+  --bg-surface: #11172a;
+  --bg-overlay: rgba(11, 15, 26, 0.72);
+  --line-soft: rgba(255, 255, 255, 0.06);
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.18);
+
+  --text-primary: #f1f6ff;
+  --text-secondary: #aab1c5;
+  --text-muted: #6b7494;
+  --text-faint: #424b66;
+
+  --accent: #6effc7;
+  --accent-soft: #6effc733;
+  --accent-strong: #98ffe0;
+  --accent-deep: #1cc593;
+  --pulse: #ff5fa2;
+  --pulse-soft: #ff5fa233;
+  --signal: #5fa8ff;
+  --warning: #ffce5f;
+  --danger: #ff6b6b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg-base);
+  --color-foreground: var(--text-primary);
+  --color-bg-base: var(--bg-base);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-surface: var(--bg-surface);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-line-strong: var(--line-strong);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-deep: var(--accent-deep);
+  --color-pulse: var(--pulse);
+  --color-pulse-soft: var(--pulse-soft);
+  --color-signal: var(--signal);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "JetBrains Mono", Menlo, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-image:
+    radial-gradient(1200px 700px at 12% -10%, rgba(110, 255, 199, 0.08), transparent 60%),
+    radial-gradient(900px 600px at 90% 10%, rgba(95, 168, 255, 0.07), transparent 60%),
+    radial-gradient(700px 500px at 50% 110%, rgba(255, 95, 162, 0.06), transparent 70%),
+    linear-gradient(180deg, #05070d 0%, #03040a 100%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Grid backdrop overlay */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at top, rgba(0, 0, 0, 0.9), transparent 80%);
+}
+
+.glass {
+  background: linear-gradient(180deg, rgba(20, 25, 45, 0.66) 0%, rgba(11, 15, 26, 0.66) 100%);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+
+.glow-ring {
+  box-shadow:
+    0 0 0 1px rgba(110, 255, 199, 0.18),
+    0 0 24px -6px rgba(110, 255, 199, 0.45),
+    0 0 60px -16px rgba(110, 255, 199, 0.5) inset;
+}
+
+@keyframes pulseRing {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(110, 255, 199, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(110, 255, 199, 0); }
+}
+.pulse-ring {
+  animation: pulseRing 2.4s ease-out infinite;
+}
+
+@keyframes scan {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(110%); }
+}
+.scan-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(110, 255, 199, 0.18) 45%, rgba(110, 255, 199, 0.45) 50%, rgba(110, 255, 199, 0.18) 55%, transparent 100%);
+  animation: scan 2.6s linear infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+@keyframes spectralShift {
+  0%, 100% { transform: scaleY(0.3); opacity: 0.6; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+.eq-bar {
+  display: inline-block;
+  width: 3px;
+  margin: 0 1.5px;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-deep) 100%);
+  border-radius: 4px;
+  transform-origin: bottom center;
+  animation: spectralShift 1.4s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+.drift {
+  animation: drift 6s ease-in-out infinite;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-strong) 0%, var(--signal) 60%, var(--pulse) 110%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+}
+
+/* Progress bar — flowing gradient fill */
+@keyframes barFlow {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -150% 0; }
+}
+
+/* Progress bar — shimmer sweep from left to right */
+@keyframes shimmerPass {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+
+/* Progress bar — glowing tip pulse */
+@keyframes tipFlare {
+  0%, 100% { box-shadow: 0 0 6px 3px var(--accent-soft), 0 0 14px 6px rgba(110,255,199,0.18); }
+  50%       { box-shadow: 0 0 10px 5px var(--accent-soft), 0 0 22px 10px rgba(110,255,199,0.36); }
 }

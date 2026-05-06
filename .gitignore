@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python worker
+python/.venv/
+python/__pycache__/
+python/**/__pycache__/
+python/.pytest_cache/
+
+# audio job storage
+/tmp/
+
