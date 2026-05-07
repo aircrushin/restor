@@ -63,6 +63,8 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -147,12 +149,29 @@ body {
 
 .eq-bar {
   display: inline-block;
-  width: 3px;
+  width: 2px;
   margin: 0 1.5px;
   background: linear-gradient(180deg, var(--accent) 0%, var(--accent-deep) 100%);
   border-radius: 4px;
   transform-origin: bottom center;
   animation: spectralShift 1.4s ease-in-out infinite;
+}
+
+@media (min-width: 640px) {
+  .eq-bar {
+    width: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 @keyframes drift {

@@ -11,7 +11,7 @@ export default async function JobPage({
     <div className="relative">
       <div aria-hidden className="bg-grid pointer-events-none absolute inset-x-0 top-0 h-[360px]" />
 
-      <div className="relative mx-auto max-w-3xl px-6 pt-12 pb-24">
+      <div className="relative mx-auto max-w-3xl px-4 pt-10 pb-16 sm:px-6 sm:pt-12 sm:pb-24">
         <header className="mb-8 space-y-2">
           <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--accent)]">
             RUN · STATUS

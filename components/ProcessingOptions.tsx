@@ -67,7 +67,7 @@ export function ProcessingOptions({ value, onChange, disabled = false }: Props) 
               type="button"
               onClick={() => set(m.id, !enabled)}
               className={[
-                "group relative overflow-hidden text-left rounded-[var(--radius-lg)] border transition-all p-5",
+                "group relative min-h-44 overflow-hidden text-left rounded-[var(--radius-lg)] border transition-all p-4 sm:p-5",
                 "hover:border-[var(--accent)]/50 hover:bg-[var(--bg-surface)]/80",
                 enabled
                   ? "border-[var(--accent)]/60 bg-[var(--bg-surface)]"
@@ -78,10 +78,10 @@ export function ProcessingOptions({ value, onChange, disabled = false }: Props) 
               {enabled && (
                 <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent" />
               )}
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-3 sm:gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] tracking-[0.25em] text-[var(--text-faint)]">
+                    <span className="font-mono text-[10px] tracking-[0.16em] text-[var(--text-faint)] sm:tracking-[0.25em]">
                       {m.shortLabel}
                     </span>
                     <span
@@ -110,8 +110,8 @@ export function ProcessingOptions({ value, onChange, disabled = false }: Props) 
         })}
       </div>
 
-      <div className="mt-6 rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--bg-elevated)]/60 p-5">
-        <div className="flex items-center justify-between">
+      <div className="mt-6 rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--bg-elevated)]/60 p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-4">
           <div>
             <div className="font-mono text-[10px] tracking-[0.25em] text-[var(--text-faint)]">
               GLOBAL · INTENSITY
@@ -134,7 +134,7 @@ export function ProcessingOptions({ value, onChange, disabled = false }: Props) 
           onChange={(e) => set("intensity", Number(e.currentTarget.value) / 100)}
           className="mt-4 w-full accent-[var(--accent)]"
         />
-        <div className="mt-1 flex justify-between text-[10px] font-mono uppercase tracking-[0.2em] text-[var(--text-faint)]">
+        <div className="mt-1 flex justify-between text-[10px] font-mono uppercase tracking-[0.08em] text-[var(--text-faint)] sm:tracking-[0.2em]">
           <span>subtle</span>
           <span>balanced</span>
           <span>aggressive</span>

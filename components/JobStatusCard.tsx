@@ -63,20 +63,20 @@ export function JobStatusCard({ jobId }: Props) {
   const isDone = job?.status === "done";
 
   return (
-    <div className="glass rounded-[var(--radius-xl)] p-8 space-y-7">
-      <div className="flex items-start justify-between gap-6">
-        <div className="space-y-1">
+    <div className="glass space-y-6 rounded-[var(--radius-xl)] p-5 sm:space-y-7 sm:p-8">
+      <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:gap-6">
+        <div className="min-w-0 space-y-1">
           <div className="font-mono text-[10px] tracking-[0.25em] text-[var(--text-faint)]">
             JOB · {jobId.slice(0, 12)}
           </div>
-          <h2 className="text-2xl font-medium text-[var(--text-primary)]">
+          <h2 className="text-xl font-medium text-[var(--text-primary)] sm:text-2xl">
             {isDone
               ? "Processing complete"
               : isError
                 ? "Processing failed"
                 : "De-AI pipeline running"}
           </h2>
-          <p className="text-sm text-[var(--text-muted)]">
+          <p className="break-words text-sm text-[var(--text-muted)]">
             {isDone
               ? `Done in ${((job!.duration_ms ?? 0) / 1000).toFixed(1)}s · ${formatBytes(job!.output_size_bytes ?? 0)} output`
               : isError
@@ -96,7 +96,7 @@ export function JobStatusCard({ jobId }: Props) {
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <a
             href={`/api/jobs/${jobId}?download=1`}
-            className="group inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-6 py-3 font-medium text-[var(--bg-base)] transition-all hover:bg-[var(--accent-strong)] hover:shadow-[0_0_24px_var(--accent-soft)]"
+            className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-6 py-3 font-medium text-[var(--bg-base)] transition-all hover:bg-[var(--accent-strong)] hover:shadow-[0_0_24px_var(--accent-soft)]"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 3v12" strokeLinecap="round" />
@@ -107,7 +107,7 @@ export function JobStatusCard({ jobId }: Props) {
           </a>
           <a
             href="/process"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--line-strong)] bg-[var(--bg-surface)]/60 px-6 py-3 text-[var(--text-secondary)] transition-all hover:border-[var(--accent)]/40 hover:text-[var(--accent)]"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--line-strong)] bg-[var(--bg-surface)]/60 px-6 py-3 text-[var(--text-secondary)] transition-all hover:border-[var(--accent)]/40 hover:text-[var(--accent)]"
           >
             Process another
           </a>
@@ -115,7 +115,7 @@ export function JobStatusCard({ jobId }: Props) {
       )}
 
       {error && (
-        <div className="flex items-center gap-3 rounded-md border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-4 py-3 text-sm text-[var(--danger)] font-mono">
+        <div className="flex items-start gap-3 rounded-md border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-4 py-3 text-sm text-[var(--danger)] font-mono">
           <span>!</span>
           <span>{error}</span>
         </div>
@@ -218,7 +218,7 @@ function ProgressBar({ progress, status }: { progress: number; status: string })
 
 function Pipeline({ currentIdx, status }: { currentIdx: number; status: string }) {
   return (
-    <ol className="grid grid-cols-2 gap-x-6 gap-y-2 md:grid-cols-4">
+    <ol className="grid grid-cols-1 gap-x-6 gap-y-2 min-[380px]:grid-cols-2 md:grid-cols-4">
       {STAGES.filter((s) => s.id !== "queued").map((s, i) => {
         const reached = currentIdx >= i + 1 || status === "done";
         const active = STAGES[currentIdx]?.id === s.id;

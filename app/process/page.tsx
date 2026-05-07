@@ -46,12 +46,12 @@ export default function ProcessPage() {
     <div className="relative">
       <div aria-hidden className="bg-grid pointer-events-none absolute inset-x-0 top-0 h-[420px]" />
 
-      <div className="relative mx-auto max-w-4xl px-6 pt-12 pb-24">
-        <header className="mb-10 space-y-3">
+      <div className="relative mx-auto max-w-4xl px-4 pt-10 pb-16 sm:px-6 sm:pt-12 sm:pb-24">
+        <header className="mb-8 space-y-3 sm:mb-10">
           <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--accent)]">
             CONFIG · PIPELINE
           </div>
-          <h1 className="text-4xl font-medium tracking-tight md:text-5xl">
+          <h1 className="text-3xl font-medium tracking-tight sm:text-4xl md:text-5xl">
             Configure the run.
           </h1>
           <p className="max-w-2xl text-[var(--text-secondary)]">
@@ -60,7 +60,7 @@ export default function ProcessPage() {
           </p>
         </header>
 
-        <div className="space-y-10">
+        <div className="space-y-8 sm:space-y-10">
           <div className="space-y-3">
             <SectionLabel n="01" label="Source audio" />
             <AudioDropzone file={file} onFile={setFile} disabled={submitting} />
@@ -73,12 +73,12 @@ export default function ProcessPage() {
 
           <div className="space-y-3">
             <SectionLabel n="03" label="Submit" />
-            <div className="glass flex flex-col items-start gap-4 rounded-[var(--radius-lg)] p-6 sm:flex-row sm:items-center sm:justify-between">
-              <div>
+            <div className="glass flex flex-col items-stretch gap-4 rounded-[var(--radius-lg)] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+              <div className="min-w-0">
                 <div className="text-sm text-[var(--text-secondary)]">
                   {file ? (
                     <>
-                      Ready to process <span className="font-mono text-[var(--accent)]">{file.name}</span>.
+                      Ready to process <span className="break-all font-mono text-[var(--accent)]">{file.name}</span>.
                     </>
                   ) : (
                     "Add a file above to enable processing."
@@ -100,7 +100,7 @@ export default function ProcessPage() {
                 onClick={submit}
                 disabled={!file || submitting}
                 className={[
-                  "inline-flex items-center gap-2 rounded-full px-7 py-3 font-medium transition-all",
+                  "inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-7 py-3 font-medium transition-all",
                   !file || submitting
                     ? "bg-[var(--bg-surface)] text-[var(--text-faint)] cursor-not-allowed"
                     : "bg-[var(--accent)] text-[var(--bg-base)] hover:bg-[var(--accent-strong)] hover:shadow-[0_0_30px_var(--accent-soft)]",
