@@ -8,6 +8,7 @@ from processors.adaptive import (
     match_loudness,
     measure_loudness_db,
 )
+from main import JobOptions
 
 
 class AdaptiveAudioTests(unittest.TestCase):
@@ -44,6 +45,28 @@ class AdaptiveAudioTests(unittest.TestCase):
         self.assertGreater(intensities["humanizer"], intensities["phase"])
         self.assertLessEqual(intensities["phase"], 0.45)
         self.assertGreater(intensities["spectral"], 0.4)
+
+    def test_music_profile_uses_conservative_module_intensities(self):
+        profile = ContentProfile(
+            content_type="music",
+            confidence=0.8,
+            rms_db=-16.0,
+            onset_rate=3.5,
+            spectral_flatness=0.12,
+            harmonic_ratio=0.55,
+            zero_crossing_rate=0.08,
+        )
+
+        intensities = adapt_module_intensities(profile, 0.8)
+
+        self.assertLessEqual(intensities["spectral"], 0.65)
+        self.assertLessEqual(intensities["humanizer"], 0.45)
+        self.assertLessEqual(intensities["phase"], 0.42)
+        self.assertLessEqual(intensities["watermark"], 0.4)
+        self.assertLess(intensities["watermark"], intensities["spectral"])
+
+    def test_watermark_wash_is_disabled_by_default(self):
+        self.assertFalse(JobOptions().watermark)
 
     def test_loudness_matching_restores_target_without_clipping(self):
         sr = 48_000

@@ -62,7 +62,7 @@ function parseOptions(raw: string | null): JobOptions {
     spectral: true,
     humanizer: true,
     phase: true,
-    watermark: true,
+    watermark: false,
     intensity: 0.6,
   };
   if (!raw) return fallback;

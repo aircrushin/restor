@@ -13,7 +13,7 @@ export default function ProcessPage() {
     spectral: true,
     humanizer: true,
     phase: true,
-    watermark: true,
+    watermark: false,
     intensity: 0.6,
   });
   const [submitting, setSubmitting] = useState(false);

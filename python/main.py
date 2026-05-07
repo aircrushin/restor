@@ -51,7 +51,7 @@ class JobOptions:
     spectral: bool = True
     humanizer: bool = True
     phase: bool = True
-    watermark: bool = True
+    watermark: bool = False
     adaptive: bool = True
     loudness_match: bool = True
     intensity: float = 0.6  # 0..1 strength multiplier shared by all modules
@@ -132,7 +132,7 @@ async def process(
             spectral=bool(opts_dict.get("spectral", True)),
             humanizer=bool(opts_dict.get("humanizer", True)),
             phase=bool(opts_dict.get("phase", True)),
-            watermark=bool(opts_dict.get("watermark", True)),
+            watermark=bool(opts_dict.get("watermark", False)),
             adaptive=bool(opts_dict.get("adaptive", True)),
             loudness_match=bool(opts_dict.get("loudness_match", True)),
             intensity=float(opts_dict.get("intensity", 0.6)),

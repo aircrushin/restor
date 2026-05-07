@@ -52,6 +52,8 @@ speech, music, percussive, or ambient, then scales module intensity for that
 content type. Order is fixed: analysis → spectral → humanizer → phase →
 watermark → loudness match. All run on a mono float32 numpy array; output is
 gain-matched back to the input loudness, peak-limited, and written as 16-bit WAV.
+Watermark Wash is available as an opt-in module and stays off by default to
+preserve musical detail.
 
 | Module     | Purpose                                                            |
 | ---------- | ------------------------------------------------------------------ |

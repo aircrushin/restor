@@ -96,10 +96,10 @@ def adapt_module_intensities(profile: ContentProfile, intensity: float) -> dict[
             "watermark": 0.65,
         },
         "music": {
-            "spectral": 1.0,
-            "humanizer": 0.8,
-            "phase": 0.75,
-            "watermark": 0.85,
+            "spectral": 0.75,
+            "humanizer": 0.45,
+            "phase": 0.4,
+            "watermark": 0.3,
         },
     }
 

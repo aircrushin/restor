@@ -34,3 +34,4 @@ status requests here. Set `PYTHON_API_URL` if you bind to a different host.
 
 All modules accept `(audio: np.ndarray, sr: int, intensity: float)` and return
 a float32 mono array of the same length.
+Watermark Wash is disabled by default and can be enabled per job.
