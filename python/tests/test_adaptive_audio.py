@@ -1,6 +1,9 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import numpy as np
+import soundfile as sf
 
 from processors.adaptive import (
     ContentProfile,
@@ -8,7 +11,7 @@ from processors.adaptive import (
     match_loudness,
     measure_loudness_db,
 )
-from main import JobOptions
+from main import JobOptions, JobRecord, _run_pipeline_blocking
 
 
 class AdaptiveAudioTests(unittest.TestCase):
@@ -87,6 +90,46 @@ class AdaptiveAudioTests(unittest.TestCase):
 
         self.assertTrue(np.all(np.isfinite(matched)))
         self.assertTrue(np.array_equal(matched, silence))
+
+    def test_wav_output_preserves_channels_subtype_and_frame_count(self):
+        sr = 48_000
+        frames = sr // 2
+        t = np.arange(frames, dtype=np.float32) / sr
+        audio = np.column_stack(
+            [
+                0.15 * np.sin(2 * np.pi * 220 * t),
+                0.12 * np.sin(2 * np.pi * 330 * t),
+            ]
+        ).astype(np.float32)
+
+        with TemporaryDirectory() as tmp:
+            upload = Path(tmp) / "input.wav"
+            output = Path(tmp) / "output.wav"
+            sf.write(upload, audio, sr, subtype="PCM_24")
+
+            record = JobRecord(
+                id="test",
+                upload_path=str(upload),
+                output_path=str(output),
+                options=JobOptions(
+                    spectral=False,
+                    humanizer=False,
+                    phase=False,
+                    watermark=False,
+                    loudness_match=False,
+                ),
+            )
+
+            result = _run_pipeline_blocking(record)
+            info = sf.info(output)
+            output_size = output.stat().st_size
+            upload_size = upload.stat().st_size
+
+        self.assertEqual(result["sample_rate"], sr)
+        self.assertEqual(info.channels, 2)
+        self.assertEqual(info.frames, frames)
+        self.assertEqual(info.subtype, "PCM_24")
+        self.assertEqual(output_size, upload_size)
 
 
 if __name__ == "__main__":

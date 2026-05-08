@@ -50,8 +50,10 @@ The Next.js layer talks to `http://127.0.0.1:8000` by default. Override with the
 Each module is independently toggleable. The worker first profiles the source as
 speech, music, percussive, or ambient, then scales module intensity for that
 content type. Order is fixed: analysis → spectral → humanizer → phase →
-watermark → loudness match. All run on a mono float32 numpy array; output is
-gain-matched back to the input loudness, peak-limited, and written as 16-bit WAV.
+watermark → loudness match. Content analysis uses a mono mix, while processing
+preserves the original channel count. WAV uploads keep their source PCM/float
+subtype on output, so an uncompressed WAV retains the same sample rate, duration,
+channel count, and bit depth instead of being downmixed or forced to 16-bit.
 Watermark Wash is available as an opt-in module and stays off by default to
 preserve musical detail.
 

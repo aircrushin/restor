@@ -22,7 +22,7 @@ import traceback
 import uuid
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 import numpy as np
 import soundfile as sf
@@ -202,21 +202,21 @@ async def _run_pipeline(job_id: str) -> None:
 
 def _run_pipeline_blocking(record: JobRecord) -> dict:
     started = time.time()
-    audio, sr = sf.read(record.upload_path, always_2d=False)
-    if audio.ndim == 2:
-        audio = np.mean(audio, axis=1)
+    source_info = sf.info(record.upload_path)
+    audio, sr = sf.read(record.upload_path, always_2d=True, dtype="float32")
     audio = audio.astype(np.float32, copy=False)
     reference_audio = audio.copy()
+    reference_mono = _to_mono(reference_audio)
 
     opts = record.options
     intensity = max(0.0, min(1.0, opts.intensity))
 
     record.stage = "analysis"
     record.progress = 12
-    profile = analyze_content(reference_audio, sr)
+    profile = analyze_content(reference_mono, sr)
     record.content_type = profile.content_type
     record.content_confidence = round(profile.confidence, 3)
-    record.input_loudness_db = round(measure_loudness_db(reference_audio, sr), 2)
+    record.input_loudness_db = round(measure_loudness_db(reference_mono, sr), 2)
 
     module_intensities = (
         adapt_module_intensities(profile, intensity)
@@ -235,22 +235,42 @@ def _run_pipeline_blocking(record: JobRecord) -> dict:
     record.stage = "spectral"
     record.progress = 20
     if opts.spectral:
-        audio = reshape_spectrum(audio, sr=sr, intensity=module_intensities["spectral"])
+        audio = _apply_per_channel(
+            audio,
+            lambda channel: reshape_spectrum(
+                channel, sr=sr, intensity=module_intensities["spectral"]
+            ),
+        )
 
     record.stage = "humanizer"
     record.progress = 45
     if opts.humanizer:
-        audio = humanize_rhythm(audio, sr=sr, intensity=module_intensities["humanizer"])
+        audio = _apply_per_channel(
+            audio,
+            lambda channel: humanize_rhythm(
+                channel, sr=sr, intensity=module_intensities["humanizer"]
+            ),
+        )
 
     record.stage = "phase"
     record.progress = 70
     if opts.phase:
-        audio = randomize_phase(audio, sr=sr, intensity=module_intensities["phase"])
+        audio = _apply_per_channel(
+            audio,
+            lambda channel: randomize_phase(
+                channel, sr=sr, intensity=module_intensities["phase"]
+            ),
+        )
 
     record.stage = "watermark"
     record.progress = 88
     if opts.watermark:
-        audio = wash_watermark(audio, sr=sr, intensity=module_intensities["watermark"])
+        audio = _apply_per_channel(
+            audio,
+            lambda channel: wash_watermark(
+                channel, sr=sr, intensity=module_intensities["watermark"]
+            ),
+        )
 
     record.stage = "loudness"
     record.progress = 92
@@ -260,14 +280,48 @@ def _run_pipeline_blocking(record: JobRecord) -> dict:
     peak = float(np.max(np.abs(audio))) if audio.size else 0.0
     if peak > 1.0:
         audio = audio / peak * 0.985
-    record.output_loudness_db = round(measure_loudness_db(audio, sr), 2)
+    record.output_loudness_db = round(measure_loudness_db(_to_mono(audio), sr), 2)
 
     record.stage = "writing"
     record.progress = 95
-    sf.write(record.output_path, audio.astype(np.float32, copy=False), sr, subtype="PCM_16")
+    sf.write(
+        record.output_path,
+        _restore_channel_shape(audio).astype(np.float32, copy=False),
+        sr,
+        subtype=_output_subtype(source_info),
+    )
 
     return {
         "duration_ms": int((time.time() - started) * 1000),
         "sample_rate": int(sr),
         "size": Path(record.output_path).stat().st_size,
     }
+
+
+def _apply_per_channel(
+    audio: np.ndarray, fn: Callable[[np.ndarray], np.ndarray]
+) -> np.ndarray:
+    channels = [
+        fn(audio[:, index]).astype(np.float32, copy=False)
+        for index in range(audio.shape[1])
+    ]
+    return np.stack(channels, axis=1).astype(np.float32, copy=False)
+
+
+def _to_mono(audio: np.ndarray) -> np.ndarray:
+    if audio.ndim == 1:
+        return audio.astype(np.float32, copy=False)
+    return np.mean(audio, axis=1).astype(np.float32, copy=False)
+
+
+def _restore_channel_shape(audio: np.ndarray) -> np.ndarray:
+    if audio.ndim == 2 and audio.shape[1] == 1:
+        return audio[:, 0]
+    return audio
+
+
+def _output_subtype(source_info: sf.SoundFileInfo) -> str:
+    wav_subtypes = {"PCM_U8", "PCM_16", "PCM_24", "PCM_32", "FLOAT", "DOUBLE"}
+    if source_info.format == "WAV" and source_info.subtype in wav_subtypes:
+        return source_info.subtype
+    return "PCM_16"
