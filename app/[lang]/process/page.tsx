@@ -1,13 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { AudioDropzone } from "@/components/AudioDropzone";
 import { ProcessingOptions } from "@/components/ProcessingOptions";
+import { dictionaries, isLocale, localizedPath, type Locale } from "@/lib/i18n";
 import type { JobOptions } from "@/lib/python-client";
 
 export default function ProcessPage() {
   const router = useRouter();
+  const params = useParams<{ lang: string }>();
+  const lang: Locale = isLocale(params.lang) ? params.lang : "en";
+  const dict = dictionaries[lang];
   const [file, setFile] = useState<File | null>(null);
   const [options, setOptions] = useState<JobOptions>({
     spectral: true,
@@ -33,11 +37,11 @@ export default function ProcessPage() {
       const res = await fetch("/api/upload", { method: "POST", body: form });
       const data = (await res.json()) as { job_id?: string; error?: string };
       if (!res.ok || !data.job_id) {
-        throw new Error(data.error || `upload failed (${res.status})`);
+        throw new Error(data.error || `${dict.process.uploadFailed} (${res.status})`);
       }
-      router.push(`/jobs/${data.job_id}`);
+      router.push(localizedPath(lang, `/jobs/${data.job_id}`));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "unexpected upload error");
+      setError(err instanceof Error ? err.message : dict.process.uploadError);
       setSubmitting(false);
     }
   };
@@ -49,44 +53,55 @@ export default function ProcessPage() {
       <div className="relative mx-auto max-w-4xl px-4 pt-10 pb-16 sm:px-6 sm:pt-12 sm:pb-24">
         <header className="mb-8 space-y-3 sm:mb-10">
           <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--accent)]">
-            CONFIG · PIPELINE
+            {dict.process.eyebrow}
           </div>
           <h1 className="text-3xl font-medium tracking-tight sm:text-4xl md:text-5xl">
-            Configure the run.
+            {dict.process.title}
           </h1>
           <p className="max-w-2xl text-[var(--text-secondary)]">
-            Drop your audio, pick the modules to engage, dial intensity, and submit. The worker
-            will stream progress here.
+            {dict.process.description}
           </p>
         </header>
 
         <div className="space-y-8 sm:space-y-10">
           <div className="space-y-3">
-            <SectionLabel n="01" label="Source audio" />
-            <AudioDropzone file={file} onFile={setFile} disabled={submitting} />
+            <SectionLabel n="01" label={dict.process.source} />
+            <AudioDropzone
+              file={file}
+              onFile={setFile}
+              disabled={submitting}
+              copy={dict.dropzone}
+            />
           </div>
 
           <div className="space-y-3">
-            <SectionLabel n="02" label="Modules" />
-            <ProcessingOptions value={options} onChange={setOptions} disabled={submitting} />
+            <SectionLabel n="02" label={dict.process.modules} />
+            <ProcessingOptions
+              value={options}
+              onChange={setOptions}
+              disabled={submitting}
+              copy={dict.options}
+            />
           </div>
 
           <div className="space-y-3">
-            <SectionLabel n="03" label="Submit" />
+            <SectionLabel n="03" label={dict.process.submit} />
             <div className="glass flex flex-col items-stretch gap-4 rounded-[var(--radius-lg)] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
               <div className="min-w-0">
                 <div className="text-sm text-[var(--text-secondary)]">
                   {file ? (
                     <>
-                      Ready to process <span className="break-all font-mono text-[var(--accent)]">{file.name}</span>.
+                      {dict.process.readyPrefix}{" "}
+                      <span className="break-all font-mono text-[var(--accent)]">{file.name}</span>
+                      {dict.process.readySuffix}
                     </>
                   ) : (
-                    "Add a file above to enable processing."
+                    dict.process.empty
                   )}
                 </div>
                 {noModuleSelected && (
                   <div className="mt-1 text-xs font-mono text-[var(--warning)]">
-                    No modules selected — output will pass through unchanged.
+                    {dict.process.noModules}
                   </div>
                 )}
                 {error && (
@@ -108,11 +123,11 @@ export default function ProcessPage() {
               >
                 {submitting ? (
                   <>
-                    <Spinner /> Submitting…
+                    <Spinner /> {dict.process.submitting}
                   </>
                 ) : (
                   <>
-                    Process audio
+                    {dict.process.button}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>

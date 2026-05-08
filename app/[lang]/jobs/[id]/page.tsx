@@ -1,11 +1,15 @@
+import { notFound } from "next/navigation";
 import { JobStatusCard } from "@/components/JobStatusCard";
+import { dictionaries, isLocale } from "@/lib/i18n";
 
 export default async function JobPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ lang: string; id: string }>;
 }) {
-  const { id } = await params;
+  const { lang, id } = await params;
+  if (!isLocale(lang)) notFound();
+  const dict = dictionaries[lang].job;
 
   return (
     <div className="relative">
@@ -14,17 +18,16 @@ export default async function JobPage({
       <div className="relative mx-auto max-w-3xl px-4 pt-10 pb-16 sm:px-6 sm:pt-12 sm:pb-24">
         <header className="mb-8 space-y-2">
           <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--accent)]">
-            RUN · STATUS
+            {dict.eyebrow}
           </div>
           <h1 className="text-3xl font-medium tracking-tight md:text-4xl">
-            De-AI in progress.
+            {dict.title}
           </h1>
           <p className="text-[var(--text-secondary)]">
-            Live readout from the worker. We&apos;ll surface the download link as soon as the
-            pipeline completes.
+            {dict.description}
           </p>
         </header>
-        <JobStatusCard jobId={id} />
+        <JobStatusCard jobId={id} lang={lang} copy={dict} />
       </div>
     </div>
   );

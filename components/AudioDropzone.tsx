@@ -4,16 +4,38 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const ACCEPTED_EXT = [".wav", ".mp3", ".flac", ".m4a", ".aac", ".ogg"];
 const ACCEPTED_HUMAN = "WAV / MP3 / FLAC / M4A / AAC / OGG";
-const MAX_MB = 15;
-const MAX_BYTES = MAX_MB * 1024 * 1024;
+const MAX_BYTES = 60 * 1024 * 1024;
+
+type Copy = {
+  unsupported: string;
+  tooLargePrefix: string;
+  tooLargeSuffix: string;
+  title: string;
+  browsePrefix: string;
+  browseAction: string;
+  privacy: string;
+  clear: string;
+};
 
 type Props = {
   file: File | null;
   onFile: (file: File | null) => void;
   disabled?: boolean;
+  copy?: Copy;
 };
 
-export function AudioDropzone({ file, onFile, disabled = false }: Props) {
+const defaultCopy: Copy = {
+  unsupported: `Unsupported format. Use ${ACCEPTED_HUMAN}.`,
+  tooLargePrefix: "File too large",
+  tooLargeSuffix: "Max 60 MB.",
+  title: "Drop an audio file here",
+  browsePrefix: "or",
+  browseAction: "click to browse",
+  privacy: "MAX 60 MB · 100% private · auto-purged",
+  clear: "clear",
+};
+
+export function AudioDropzone({ file, onFile, disabled = false, copy = defaultCopy }: Props) {
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [waveform, setWaveform] = useState<number[] | null>(null);
@@ -43,16 +65,16 @@ export function AudioDropzone({ file, onFile, disabled = false }: Props) {
       if (!f) return;
       const ext = "." + (f.name.split(".").pop() ?? "").toLowerCase();
       if (!ACCEPTED_EXT.includes(ext)) {
-        setError(`Unsupported format. Use ${ACCEPTED_HUMAN}.`);
+        setError(copy.unsupported);
         return;
       }
       if (f.size > MAX_BYTES) {
-        setError(`File too large (${(f.size / 1024 / 1024).toFixed(1)} MB). Max ${MAX_MB} MB.`);
+        setError(`${copy.tooLargePrefix} (${(f.size / 1024 / 1024).toFixed(1)} MB). ${copy.tooLargeSuffix}`);
         return;
       }
       onFile(f);
     },
-    [onFile]
+    [copy, onFile]
   );
 
   const onDrop = (e: React.DragEvent<HTMLLabelElement>) => {
@@ -102,13 +124,13 @@ export function AudioDropzone({ file, onFile, disabled = false }: Props) {
             </div>
             <div className="space-y-2">
               <h3 className="text-lg font-medium text-[var(--text-primary)]">
-                Drop an audio file here
+                {copy.title}
               </h3>
               <p className="mx-auto max-w-[28ch] text-sm leading-relaxed text-[var(--text-muted)] sm:max-w-none">
-                or <span className="text-[var(--accent)] underline decoration-dotted underline-offset-4">click to browse</span> · {ACCEPTED_HUMAN}
+                {copy.browsePrefix} <span className="text-[var(--accent)] underline decoration-dotted underline-offset-4">{copy.browseAction}</span> · {ACCEPTED_HUMAN}
               </p>
               <p className="text-xs text-[var(--text-faint)] font-mono uppercase tracking-[0.14em] sm:tracking-[0.2em]">
-                MAX 15 MB · 90 SEC · 100% private · auto-purged
+                {copy.privacy}
               </p>
             </div>
           </div>
@@ -137,7 +159,7 @@ export function AudioDropzone({ file, onFile, disabled = false }: Props) {
               }}
               className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] px-4 text-xs text-[var(--text-muted)] hover:border-[var(--danger)]/40 hover:text-[var(--danger)] transition-colors font-mono uppercase tracking-wider sm:border-0 sm:px-2"
             >
-              clear
+              {copy.clear}
             </button>
           </div>
         )}

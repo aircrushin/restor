@@ -1,13 +1,34 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import type { JobRecord } from "@/lib/python-client";
 
 type Props = {
   jobId: string;
+  lang?: Locale;
+  copy?: Copy;
 };
 
-const STAGES: { id: string; label: string }[] = [
+type StageCopy = { id: string; label: string };
+type Copy = {
+  notFound: string;
+  pollingFailed: string;
+  complete: string;
+  failed: string;
+  running: string;
+  doneIn: string;
+  output: string;
+  unknownFailure: string;
+  stage: string;
+  progress: string;
+  download: string;
+  another: string;
+  emptyStage: string;
+  stages: readonly StageCopy[];
+};
+
+const STAGES: StageCopy[] = [
   { id: "queued", label: "Queued" },
   { id: "loading", label: "Loading audio" },
   { id: "analysis", label: "Analyze content" },
@@ -20,7 +41,24 @@ const STAGES: { id: string; label: string }[] = [
   { id: "done", label: "Done" },
 ];
 
-export function JobStatusCard({ jobId }: Props) {
+const defaultCopy: Copy = {
+  notFound: "Job not found. It may have expired or the worker restarted.",
+  pollingFailed: "polling failed",
+  complete: "Processing complete",
+  failed: "Processing failed",
+  running: "De-AI pipeline running",
+  doneIn: "Done in",
+  output: "output",
+  unknownFailure: "Unknown failure",
+  stage: "Stage",
+  progress: "PROGRESS",
+  download: "Download .wav",
+  another: "Process another",
+  emptyStage: "-",
+  stages: STAGES,
+};
+
+export function JobStatusCard({ jobId, lang = "en", copy = defaultCopy }: Props) {
   const [job, setJob] = useState<JobRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
   const aliveRef = useRef(true);
@@ -33,7 +71,7 @@ export function JobStatusCard({ jobId }: Props) {
         const res = await fetch(`/api/jobs/${jobId}`, { cache: "no-store" });
         if (!res.ok) {
           if (res.status === 404) {
-            setError("Job not found. It may have expired or the worker restarted.");
+            setError(copy.notFound);
             return;
           }
           throw new Error(`status ${res.status}`);
@@ -46,7 +84,7 @@ export function JobStatusCard({ jobId }: Props) {
         setTimeout(tick, 1500);
       } catch (err) {
         if (!aliveRef.current) return;
-        const message = err instanceof Error ? err.message : "polling failed";
+        const message = err instanceof Error ? err.message : copy.pollingFailed;
         setError(message);
         setTimeout(tick, 3000);
       }
@@ -56,9 +94,9 @@ export function JobStatusCard({ jobId }: Props) {
     return () => {
       aliveRef.current = false;
     };
-  }, [jobId]);
+  }, [copy, jobId]);
 
-  const stageIdx = STAGES.findIndex((s) => s.id === job?.stage);
+  const stageIdx = copy.stages.findIndex((s) => s.id === job?.stage);
   const isError = job?.status === "error";
   const isDone = job?.status === "done";
 
@@ -71,26 +109,26 @@ export function JobStatusCard({ jobId }: Props) {
           </div>
           <h2 className="text-xl font-medium text-[var(--text-primary)] sm:text-2xl">
             {isDone
-              ? "Processing complete"
+              ? copy.complete
               : isError
-                ? "Processing failed"
-                : "De-AI pipeline running"}
+                ? copy.failed
+                : copy.running}
           </h2>
           <p className="break-words text-sm text-[var(--text-muted)]">
             {isDone
-              ? `Done in ${((job!.duration_ms ?? 0) / 1000).toFixed(1)}s · ${formatBytes(job!.output_size_bytes ?? 0)} output`
+              ? `${copy.doneIn} ${((job!.duration_ms ?? 0) / 1000).toFixed(1)}s · ${formatBytes(job!.output_size_bytes ?? 0)} ${copy.output}`
               : isError
-                ? job?.error ?? "Unknown failure"
-                : `Stage: ${prettyStage(job?.stage)}`}
+                ? job?.error ?? copy.unknownFailure
+                : `${copy.stage}: ${prettyStage(job?.stage, copy)}`}
           </p>
         </div>
 
         <StatusOrb status={job?.status ?? "queued"} progress={job?.progress ?? 0} />
       </div>
 
-      <ProgressBar progress={job?.progress ?? 0} status={job?.status ?? "queued"} />
+      <ProgressBar progress={job?.progress ?? 0} status={job?.status ?? "queued"} label={copy.progress} />
 
-      <Pipeline currentIdx={stageIdx} status={job?.status ?? "queued"} />
+      <Pipeline currentIdx={stageIdx} status={job?.status ?? "queued"} stages={copy.stages} />
 
       {isDone && (
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -103,13 +141,13 @@ export function JobStatusCard({ jobId }: Props) {
               <path d="m6 9 6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M4 21h16" strokeLinecap="round" />
             </svg>
-            Download .wav
+            {copy.download}
           </a>
           <a
-            href="/process"
+            href={localizedPath(lang, "/process")}
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--line-strong)] bg-[var(--bg-surface)]/60 px-6 py-3 text-[var(--text-secondary)] transition-all hover:border-[var(--accent)]/40 hover:text-[var(--accent)]"
           >
-            Process another
+            {copy.another}
           </a>
         </div>
       )}
@@ -124,7 +162,7 @@ export function JobStatusCard({ jobId }: Props) {
   );
 }
 
-function ProgressBar({ progress, status }: { progress: number; status: string }) {
+function ProgressBar({ progress, status, label }: { progress: number; status: string; label: string }) {
   const isError = status === "error";
   const isActive = status === "processing";
   const isDone = status === "done";
@@ -132,7 +170,7 @@ function ProgressBar({ progress, status }: { progress: number; status: string })
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-xs font-mono uppercase tracking-[0.2em]">
-        <span className="text-[var(--text-faint)]">PROGRESS</span>
+        <span className="text-[var(--text-faint)]">{label}</span>
         <span
           className={[
             "tabular-nums transition-colors duration-300",
@@ -216,12 +254,12 @@ function ProgressBar({ progress, status }: { progress: number; status: string })
   );
 }
 
-function Pipeline({ currentIdx, status }: { currentIdx: number; status: string }) {
+function Pipeline({ currentIdx, status, stages }: { currentIdx: number; status: string; stages: readonly StageCopy[] }) {
   return (
     <ol className="grid grid-cols-1 gap-x-6 gap-y-2 min-[380px]:grid-cols-2 md:grid-cols-4">
-      {STAGES.filter((s) => s.id !== "queued").map((s, i) => {
+      {stages.filter((s) => s.id !== "queued").map((s, i) => {
         const reached = currentIdx >= i + 1 || status === "done";
-        const active = STAGES[currentIdx]?.id === s.id;
+        const active = stages[currentIdx]?.id === s.id;
         return (
           <li key={s.id} className="flex items-center gap-2 min-w-0">
             <span
@@ -287,9 +325,9 @@ function StatusOrb({ status, progress }: { status: string; progress: number }) {
   );
 }
 
-function prettyStage(s: string | undefined): string {
-  if (!s) return "—";
-  return s.charAt(0).toUpperCase() + s.slice(1);
+function prettyStage(s: string | undefined, copy: Copy): string {
+  if (!s) return copy.emptyStage;
+  return copy.stages.find((stage) => stage.id === s)?.label ?? s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function formatBytes(n: number): string {
