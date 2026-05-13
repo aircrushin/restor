@@ -49,3 +49,4 @@ python/.pytest_cache/
 # audio job storage
 /tmp/
 
+.playwright-cli

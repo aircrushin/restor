@@ -12,53 +12,56 @@ export default async function Home({
   const dict = dictionaries[lang].home;
 
   return (
-    <div className="relative">
-      <div aria-hidden className="bg-grid pointer-events-none absolute inset-0 h-[640px]" />
+    <div className="relative overflow-hidden">
+      <div aria-hidden className="bg-grid pointer-events-none absolute inset-x-0 top-0 h-[760px]" />
 
-      <section className="relative mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6 sm:pt-16 sm:pb-20 md:pt-20 md:pb-24">
-        <div className="grid gap-10 md:grid-cols-[1.1fr_0.9fr] md:items-center lg:gap-14">
-          <div className="space-y-7">
+      <section className="relative mx-auto grid min-h-[calc(100svh-73px)] max-w-7xl grid-rows-[1fr_auto] px-4 pb-6 pt-8 sm:px-6 sm:pt-10">
+        <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center lg:gap-10">
+          <div className="max-w-3xl space-y-7">
             <Tag>{dict.tag}</Tag>
-            <h1 className="text-4xl font-medium leading-[1.06] tracking-tight sm:text-5xl md:text-7xl">
+            <h1
+              className={[
+                "max-w-[8ch] font-black uppercase tracking-normal text-[var(--ink)]",
+                lang === "zh"
+                  ? "text-[clamp(4rem,8vw,6.8rem)] leading-[0.98]"
+                  : "text-[clamp(4.25rem,10vw,7.8rem)] leading-[0.82]",
+              ].join(" ")}
+            >
               {dict.titleLead}
-              <br className="hidden sm:block" />
-              <span className="sm:hidden"> </span>
-              <span className="gradient-text">{dict.titleAccent}</span>
+              <span className="gradient-text block">{dict.titleAccent}</span>
             </h1>
-            <p className="max-w-xl text-base leading-relaxed text-[var(--text-secondary)] sm:text-lg">
-              {dict.intro} <span className="text-[var(--text-primary)]">{dict.introBrand}</span>
+            <p className="max-w-2xl border-l-2 border-[var(--ink)] pl-5 text-lg leading-relaxed text-[var(--text-secondary)] sm:text-xl">
+              {dict.intro} <span className="font-medium text-[var(--text-primary)]">{dict.introBrand}</span>
             </p>
-            <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+            <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:flex-wrap sm:items-center">
               <Link
                 href={localizedPath(lang, "/process")}
-                className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-7 py-3.5 font-medium text-[var(--bg-base)] transition-all hover:bg-[var(--accent-strong)] hover:shadow-[0_0_30px_var(--accent-soft)]"
+                className="group inline-flex min-h-14 items-center justify-center gap-3 border border-[var(--ink)] bg-[var(--ink)] px-7 py-4 font-semibold text-[var(--paper)] transition-all hover:-translate-y-1 hover:bg-[var(--accent)] hover:shadow-[6px_6px_0_var(--ink)]"
               >
                 {dict.ctaPrimary}
                 <ArrowIcon />
               </Link>
               <Link
                 href="#how"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--line-strong)] bg-[var(--bg-surface)]/40 px-6 py-3 text-[var(--text-secondary)] transition-all hover:border-[var(--accent)]/40 hover:text-[var(--accent)]"
+                className="inline-flex min-h-14 items-center justify-center border border-[var(--ink)] bg-[var(--paper)] px-7 py-4 font-semibold text-[var(--ink)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0_var(--ink)]"
               >
                 {dict.ctaSecondary}
               </Link>
             </div>
-
-            <dl className="grid grid-cols-3 gap-3 pt-4 sm:gap-6 sm:pt-8">
-              {dict.stats.map((stat) => (
-                <Stat key={stat.label} label={stat.label} value={stat.value} />
-              ))}
-            </dl>
           </div>
 
-          <div className="relative">
-            <HeroVisual lang={lang} />
-          </div>
+          <HeroVisual lang={lang} />
         </div>
+
+        <dl className="mt-8 grid border-y border-[var(--ink)] bg-[var(--paper)] sm:grid-cols-3">
+          {dict.stats.map((stat) => (
+            <Stat key={stat.label} label={stat.label} value={stat.value} />
+          ))}
+        </dl>
       </section>
 
       <Section id="how" eyebrow={dict.pipeline.eyebrow} title={dict.pipeline.title}>
-        <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
+        <div className="grid border-y border-[var(--line-strong)] md:grid-cols-4">
           {dict.pipeline.cards.map((card) => (
             <Card key={card.number} {...card} />
           ))}
@@ -66,7 +69,7 @@ export default async function Home({
       </Section>
 
       <Section id="science" eyebrow={dict.science.eyebrow} title={dict.science.title}>
-        <div className="grid gap-px overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--line-soft)] md:grid-cols-2">
+        <div className="grid gap-px overflow-hidden border border-[var(--ink)] bg-[var(--ink)] md:grid-cols-2">
           {dict.science.rows.map((row) => (
             <ScienceRow
               key={row.label}
@@ -81,16 +84,19 @@ export default async function Home({
         </div>
       </Section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-24">
-        <div className="glass overflow-hidden rounded-[var(--radius-xl)] p-6 sm:p-10 md:p-14">
-          <div className="flex flex-col items-start gap-8 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-xl space-y-3">
-              <h3 className="text-2xl font-medium sm:text-3xl">{dict.finalCta.title}</h3>
-              <p className="text-[var(--text-secondary)]">{dict.finalCta.body}</p>
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 sm:pb-24">
+        <div className="relative overflow-hidden border border-[var(--ink)] bg-[var(--ink)] p-6 text-[var(--paper)] sm:p-10 md:p-14">
+          <div aria-hidden className="absolute bottom-0 right-0 h-32 w-32 translate-x-8 translate-y-8 bg-[var(--accent)]" />
+          <div className="relative flex flex-col items-start gap-8 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl space-y-4">
+              <h3 className="text-4xl font-black uppercase leading-[0.9] tracking-normal sm:text-5xl md:text-6xl">
+                {dict.finalCta.title}
+              </h3>
+              <p className="max-w-xl text-[var(--bone)]">{dict.finalCta.body}</p>
             </div>
             <Link
               href={localizedPath(lang, "/process")}
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-8 py-4 font-medium text-[var(--bg-base)] transition-all hover:bg-[var(--accent-strong)] hover:shadow-[0_0_30px_var(--accent-soft)] sm:w-auto"
+              className="group inline-flex min-h-14 w-full items-center justify-center gap-3 border border-[var(--paper)] bg-[var(--paper)] px-8 py-4 font-semibold text-[var(--ink)] transition-all hover:-translate-y-1 hover:bg-[var(--lime)] hover:shadow-[6px_6px_0_var(--accent)] sm:w-auto"
             >
               {dict.finalCta.button}
               <ArrowIcon />
@@ -104,8 +110,8 @@ export default async function Home({
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--accent-strong)]">
-      <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]" />
+    <span className="inline-flex items-center gap-2 border border-[var(--ink)] bg-[var(--lime)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.28em] text-[var(--ink)] shadow-[4px_4px_0_var(--ink)]">
+      <span className="h-2 w-2 bg-[var(--accent)]" />
       {children}
     </span>
   );
@@ -113,11 +119,11 @@ function Tag({ children }: { children: React.ReactNode }) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <dt className="font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--text-faint)]">
+    <div className="border-[var(--ink)] p-4 sm:border-r sm:p-6 last:sm:border-r-0">
+      <dt className="font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--text-muted)]">
         {label}
       </dt>
-      <dd className="mt-2 text-2xl font-medium tracking-tight text-[var(--text-primary)] sm:text-3xl">
+      <dd className="mt-2 text-4xl font-black tracking-normal text-[var(--ink)] sm:text-5xl">
         {value}
       </dd>
     </div>
@@ -136,18 +142,21 @@ function Card({
   tag: string;
 }) {
   return (
-    <article className="group relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--line)] bg-[var(--bg-elevated)]/60 p-5 transition-all hover:border-[var(--accent)]/40 hover:bg-[var(--bg-surface)]/80 sm:p-6">
-      <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
-        <div className="space-y-3">
-          <div className="font-mono text-[10px] tracking-[0.3em] text-[var(--text-faint)]">{number}</div>
-          <h4 className="text-xl font-medium text-[var(--text-primary)]">{title}</h4>
-          <p className="max-w-prose text-sm leading-relaxed text-[var(--text-secondary)]">{body}</p>
+    <article className="group relative min-h-72 border-b border-[var(--line-strong)] bg-[var(--paper)] p-5 transition-colors hover:bg-[var(--lime)] md:border-b-0 md:border-r last:md:border-r-0 sm:p-6">
+      <div className="flex h-full flex-col justify-between gap-8">
+        <div className="space-y-5">
+          <div className="flex items-center justify-between gap-4">
+            <div className="font-mono text-[10px] tracking-[0.28em] text-[var(--text-muted)]">{number}</div>
+            <span className="border border-[var(--ink)] bg-[var(--bg-base)] px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--ink)]">
+              {tag}
+            </span>
+          </div>
+          <h4 className="max-w-[10ch] text-2xl font-black uppercase leading-[0.95] tracking-normal text-[var(--ink)]">
+            {title}
+          </h4>
         </div>
-        <span className="shrink-0 rounded-full border border-[var(--line-strong)] bg-[var(--bg-base)] px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--text-muted)]">
-          {tag}
-        </span>
+        <p className="text-sm leading-relaxed text-[var(--text-secondary)] group-hover:text-[var(--ink)]">{body}</p>
       </div>
-      <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
     </article>
   );
 }
@@ -164,12 +173,14 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-      <div className="mb-8 max-w-3xl space-y-3 sm:mb-10">
+    <section id={id} className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
+      <div className="mb-8 grid gap-5 md:grid-cols-[220px_1fr] md:items-end">
         <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--accent)]">
           {eyebrow}
         </div>
-        <h2 className="text-2xl font-medium tracking-tight sm:text-3xl md:text-4xl">{title}</h2>
+        <h2 className="max-w-4xl text-4xl font-black uppercase leading-[0.9] tracking-normal text-[var(--ink)] sm:text-5xl md:text-7xl">
+          {title}
+        </h2>
       </div>
       {children}
     </section>
@@ -188,21 +199,21 @@ function ScienceRow({
   labels: { fingerprint: string; detector: string; counter: string };
 }) {
   return (
-    <div className="grid gap-4 bg-[var(--bg-elevated)] p-5 sm:p-6 md:grid-cols-[140px_1fr_1fr] md:items-start md:gap-6">
+    <div className="grid gap-5 bg-[var(--paper)] p-5 sm:p-6 md:grid-cols-[150px_1fr_1fr] md:items-start md:gap-6">
       <div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--text-faint)]">
+        <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--text-muted)]">
           {labels.fingerprint}
         </div>
-        <div className="mt-1 text-base font-medium text-[var(--text-primary)]">{label}</div>
+        <div className="mt-2 text-xl font-black uppercase leading-none text-[var(--ink)]">{label}</div>
       </div>
       <div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--pulse)]">
+        <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--accent)]">
           {labels.detector}
         </div>
         <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">{detector}</p>
       </div>
       <div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--accent)]">
+        <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--pulse)]">
           {labels.counter}
         </div>
         <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">{counter}</p>
@@ -213,47 +224,42 @@ function ScienceRow({
 
 function HeroVisual({ lang }: { lang: Locale }) {
   const visual = dictionaries[lang].home.visual;
+  const bars = Array.from({ length: 72 });
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[420px] overflow-hidden rounded-[var(--radius-xl)] border border-[var(--line)] bg-[var(--bg-elevated)] drift md:max-w-none">
-      <div aria-hidden className="bg-grid absolute inset-0 opacity-50" />
-      <div className="scan-line absolute inset-0" />
-      <div className="absolute inset-0 grid place-items-center p-6 sm:p-10">
-        <div className="grid h-full w-full place-items-center">
-          <div className="relative grid h-full w-full place-items-center">
-            <div className="pointer-events-none absolute inset-0 grid place-items-center">
-              <div className="h-40 w-40 rounded-full border border-[var(--accent)]/30 pulse-ring sm:h-56 sm:w-56" />
-            </div>
-            <div className="pointer-events-none absolute inset-0 grid place-items-center">
-              <div className="h-52 w-52 rounded-full border border-[var(--signal)]/20 sm:h-72 sm:w-72" />
-            </div>
-            <div className="relative flex h-36 w-full max-w-[76%] items-end justify-center gap-[2px] sm:h-44 sm:max-w-[70%] sm:gap-[3px]">
-              {Array.from({ length: 56 }).map((_, i) => (
-                <span
-                  key={i}
-                  className="eq-bar"
-                  style={{
-                    height: `${20 + ((i * 7) % 80)}%`,
-                    animationDelay: `${(i % 12) * 0.07}s`,
-                    animationDuration: `${1.2 + (i % 5) * 0.18}s`,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+    <div className="relative min-h-[520px] overflow-hidden border border-[var(--ink)] bg-[var(--paper)] shadow-[10px_10px_0_var(--ink)] sm:min-h-[640px]">
+      <div aria-hidden className="absolute inset-0 bg-[linear-gradient(135deg,transparent_0_49%,rgba(35,31,25,0.08)_49%_51%,transparent_51%)] bg-[length:42px_42px]" />
+      <div aria-hidden className="absolute -left-16 top-10 h-64 w-64 rounded-full border-[28px] border-[var(--accent)]" />
+      <div aria-hidden className="absolute right-8 top-8 h-20 w-20 bg-[var(--lime)] shadow-[8px_8px_0_var(--ink)]" />
+      <div aria-hidden className="absolute bottom-12 right-8 h-44 w-44 border border-[var(--ink)] bg-[var(--signal)]" />
+
+      <div className="scan-line absolute inset-x-0 top-1/2 h-28 -translate-y-1/2 overflow-hidden border-y border-[var(--ink)] bg-[var(--ink)]">
+        <div className="flex h-full items-end justify-center gap-[3px] px-6">
+          {bars.map((_, i) => (
+            <span
+              key={i}
+              className="eq-bar"
+              style={{
+                height: `${18 + ((i * 11) % 78)}%`,
+                animationDelay: `${(i % 16) * 0.055}s`,
+                animationDuration: `${1.1 + (i % 7) * 0.14}s`,
+              }}
+            />
+          ))}
         </div>
       </div>
-      <div className="absolute left-4 top-4 font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--text-muted)]">
-        {visual.analysis}
+
+      <div className="absolute bottom-6 left-6 right-6 grid gap-3 border border-[var(--ink)] bg-[var(--paper)] p-4 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--ink)] sm:grid-cols-3">
+        <span>{visual.analysis}</span>
+        <span className="flex items-center gap-2">
+          <span className="h-2 w-2 bg-[var(--accent)] shadow-[0_0_0_4px_var(--accent-soft)]" />
+          {visual.live}
+        </span>
+        <span className="sm:text-right">44.1k / 24bit</span>
       </div>
-      <div className="absolute right-4 top-4 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--accent)]">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_10px_var(--accent)]" />
-        {visual.live}
-      </div>
-      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--text-muted)] sm:text-[10px] sm:tracking-[0.3em]">
-        <span>fft 2048</span>
-        <span>hop 512</span>
-        <span>sr 44.1k</span>
+
+      <div className="absolute left-6 top-6 max-w-[15ch] text-5xl font-black uppercase leading-[0.82] tracking-normal text-[var(--ink)] sm:text-7xl">
+        {visual.title}
       </div>
     </div>
   );

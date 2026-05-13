@@ -1,28 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  --bg-base: #05070d;
-  --bg-elevated: #0b0f1a;
-  --bg-surface: #11172a;
-  --bg-overlay: rgba(11, 15, 26, 0.72);
-  --line-soft: rgba(255, 255, 255, 0.06);
-  --line: rgba(255, 255, 255, 0.1);
-  --line-strong: rgba(255, 255, 255, 0.18);
+  --bg-base: #f4efe6;
+  --bg-elevated: #fff9ed;
+  --bg-surface: #ebe0cf;
+  --bg-overlay: rgba(244, 239, 230, 0.82);
+  --line-soft: rgba(35, 31, 25, 0.08);
+  --line: rgba(35, 31, 25, 0.14);
+  --line-strong: rgba(35, 31, 25, 0.26);
 
-  --text-primary: #f1f6ff;
-  --text-secondary: #aab1c5;
-  --text-muted: #6b7494;
-  --text-faint: #424b66;
+  --text-primary: #231f19;
+  --text-secondary: #61594d;
+  --text-muted: #8b7d6d;
+  --text-faint: #b7a996;
 
-  --accent: #6effc7;
-  --accent-soft: #6effc733;
-  --accent-strong: #98ffe0;
-  --accent-deep: #1cc593;
-  --pulse: #ff5fa2;
-  --pulse-soft: #ff5fa233;
-  --signal: #5fa8ff;
-  --warning: #ffce5f;
-  --danger: #ff6b6b;
+  --accent: #d93b25;
+  --accent-soft: rgba(217, 59, 37, 0.14);
+  --accent-strong: #ff4f35;
+  --accent-deep: #9c2316;
+  --pulse: #1f7a58;
+  --pulse-soft: rgba(31, 122, 88, 0.14);
+  --signal: #1b4f8a;
+  --warning: #b87900;
+  --danger: #b82f28;
+  --paper: #fffaf0;
+  --ink: #17130e;
+  --bone: #d8cab8;
+  --lime: #b4e647;
 }
 
 @theme inline {
@@ -48,13 +52,13 @@
   --color-warning: var(--warning);
   --color-danger: var(--danger);
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "JetBrains Mono", Menlo, monospace;
+  --font-sans: "Avenir Next", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "SFMono-Regular", "Roboto Mono", "Cascadia Mono", ui-monospace, Menlo, monospace;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
 }
 
 html,
@@ -69,10 +73,10 @@ body {
 
 body {
   background-image:
-    radial-gradient(1200px 700px at 12% -10%, rgba(110, 255, 199, 0.08), transparent 60%),
-    radial-gradient(900px 600px at 90% 10%, rgba(95, 168, 255, 0.07), transparent 60%),
-    radial-gradient(700px 500px at 50% 110%, rgba(255, 95, 162, 0.06), transparent 70%),
-    linear-gradient(180deg, #05070d 0%, #03040a 100%);
+    linear-gradient(90deg, rgba(35, 31, 25, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(35, 31, 25, 0.03) 1px, transparent 1px),
+    linear-gradient(135deg, #f4efe6 0%, #fff7e8 42%, #e8dcc9 100%);
+  background-size: 72px 72px, 72px 72px, auto;
   background-attachment: fixed;
 }
 
@@ -100,24 +104,24 @@ body {
 /* Grid backdrop overlay */
 .bg-grid {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse at top, rgba(0, 0, 0, 0.9), transparent 80%);
+    linear-gradient(to right, rgba(35, 31, 25, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(35, 31, 25, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.8), transparent 82%);
 }
 
 .glass {
-  background: linear-gradient(180deg, rgba(20, 25, 45, 0.66) 0%, rgba(11, 15, 26, 0.66) 100%);
+  background: color-mix(in oklch, var(--paper) 78%, transparent);
   border: 1px solid var(--line);
-  backdrop-filter: blur(18px) saturate(120%);
-  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  backdrop-filter: blur(18px) saturate(110%);
+  -webkit-backdrop-filter: blur(18px) saturate(110%);
 }
 
 .glow-ring {
   box-shadow:
-    0 0 0 1px rgba(110, 255, 199, 0.18),
-    0 0 24px -6px rgba(110, 255, 199, 0.45),
-    0 0 60px -16px rgba(110, 255, 199, 0.5) inset;
+    0 0 0 1px rgba(217, 59, 37, 0.24),
+    0 12px 40px -18px rgba(217, 59, 37, 0.65),
+    0 0 80px -26px rgba(180, 230, 71, 0.6) inset;
 }
 
 @keyframes pulseRing {
@@ -136,7 +140,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(110, 255, 199, 0.18) 45%, rgba(110, 255, 199, 0.45) 50%, rgba(110, 255, 199, 0.18) 55%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(217, 59, 37, 0.12) 45%, rgba(217, 59, 37, 0.28) 50%, rgba(180, 230, 71, 0.18) 55%, transparent 100%);
   animation: scan 2.6s linear infinite;
   pointer-events: none;
   mix-blend-mode: screen;
@@ -151,7 +155,7 @@ body {
   display: inline-block;
   width: 2px;
   margin: 0 1.5px;
-  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-deep) 100%);
+  background: linear-gradient(180deg, var(--accent-strong) 0%, var(--accent-deep) 100%);
   border-radius: 4px;
   transform-origin: bottom center;
   animation: spectralShift 1.4s ease-in-out infinite;
@@ -183,11 +187,8 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent-strong) 0%, var(--signal) 60%, var(--pulse) 110%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: var(--accent);
+  text-shadow: 0.035em 0.035em 0 var(--lime);
 }
 
 .divider-line {

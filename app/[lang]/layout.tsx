@@ -1,19 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { dictionaries, isLocale, locales, localizedPath, type Locale } from "@/lib/i18n";
 import "../globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -43,7 +32,7 @@ export default async function RootLayout({
   return (
     <html
       lang={lang === "zh" ? "zh-CN" : "en"}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col overflow-x-hidden text-[var(--text-primary)]">
         <SiteHeader lang={lang} dict={dict} />
@@ -58,14 +47,14 @@ function SiteHeader({ lang, dict }: { lang: Locale; dict: typeof dictionaries[Lo
   const otherLang: Locale = lang === "en" ? "zh" : "en";
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--line-soft)] bg-[var(--bg-overlay)] backdrop-blur-xl">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
+    <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--bg-overlay)] backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
         <Link href={localizedPath(lang)} className="group flex items-center gap-2.5">
-          <span className="grid h-8 w-8 place-items-center rounded-md bg-[var(--accent-soft)] border border-[var(--accent)]/30">
-            <span className="block h-3 w-3 rounded-sm bg-[var(--accent)] shadow-[0_0_10px_var(--accent)]" />
+          <span className="grid h-9 w-9 place-items-center border border-[var(--ink)] bg-[var(--accent)] shadow-[4px_4px_0_var(--ink)] transition-transform group-hover:-translate-y-0.5">
+            <span className="block h-3 w-3 bg-[var(--paper)]" />
           </span>
-          <span className="font-mono text-sm tracking-[0.3em] text-[var(--text-primary)]">
-            RESTOR<span className="text-[var(--accent)]">_</span>
+          <span className="font-mono text-sm tracking-[0.28em] text-[var(--text-primary)]">
+            RESTOR<span className="text-[var(--accent)]">.</span>AI
           </span>
         </Link>
         <nav className="flex shrink-0 items-center gap-2 text-sm sm:gap-5 md:gap-7">
@@ -80,7 +69,7 @@ function SiteHeader({ lang, dict }: { lang: Locale; dict: typeof dictionaries[Lo
           </Link>
           <Link
             href={localizedPath(lang, "/process")}
-            className="inline-flex min-h-11 items-center rounded-full border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-4 py-2 font-medium text-[var(--accent-strong)] transition-all hover:bg-[var(--accent)] hover:text-[var(--bg-base)]"
+            className="hidden min-h-11 items-center border border-[var(--ink)] bg-[var(--ink)] px-4 py-2 font-medium text-[var(--paper)] transition-all hover:-translate-y-0.5 hover:bg-[var(--accent)] hover:text-[var(--paper)] hover:shadow-[4px_4px_0_var(--ink)] sm:inline-flex"
           >
             {dict.nav.launch}
           </Link>
@@ -92,9 +81,9 @@ function SiteHeader({ lang, dict }: { lang: Locale; dict: typeof dictionaries[Lo
 
 function SiteFooter({ dict }: { dict: typeof dictionaries[Locale] }) {
   return (
-    <footer className="border-t border-[var(--line-soft)] py-8">
-      <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-4 sm:flex-row sm:items-center sm:px-6">
-        <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--text-faint)]">
+    <footer className="border-t border-[var(--line)] py-8">
+      <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-4 sm:flex-row sm:items-center sm:px-6">
+        <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--text-muted)]">
           {dict.footer.tagline}
         </p>
         <p className="text-xs text-[var(--text-muted)]">
