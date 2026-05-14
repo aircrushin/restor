@@ -50,7 +50,7 @@ The Next.js layer talks to `http://127.0.0.1:8000` by default. Override with the
 Each module is independently toggleable. The worker first profiles the source as
 speech, music, percussive, or ambient, then scales module intensity for that
 content type. Order is fixed: analysis → spectral → humanizer → phase →
-watermark → loudness match. Content analysis uses a mono mix, while processing
+watermark → loudness match → optional clip-safe mastering. Content analysis uses a mono mix, while processing
 preserves the original channel count. WAV uploads keep their source PCM/float
 subtype on output, so an uncompressed WAV retains the same sample rate, duration,
 channel count, and bit depth instead of being downmixed or forced to 16-bit.
@@ -63,6 +63,7 @@ preserve musical detail.
 | Humanizer  | Onset jitter (±4–16 ms) + per-onset velocity drift                 |
 | Phase      | Mid/high-band phase entropy + small synthetic room IR              |
 | Watermark  | Diffusion-style re-noising + upper-band magnitude/phase wobble     |
+| Mastering  | Conservative glue compression, loudness lift, and -1 dBFS ceiling  |
 
 ## Storage
 

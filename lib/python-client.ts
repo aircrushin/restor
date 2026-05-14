@@ -8,6 +8,7 @@ export type JobOptions = {
   humanizer: boolean;
   phase: boolean;
   watermark: boolean;
+  mastering?: boolean;
   adaptive?: boolean;
   loudness_match?: boolean;
   intensity: number;

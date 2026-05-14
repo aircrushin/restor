@@ -18,13 +18,18 @@ export default function ProcessPage() {
     humanizer: true,
     phase: true,
     watermark: false,
+    mastering: false,
     intensity: 0.6,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const noModuleSelected =
-    !options.spectral && !options.humanizer && !options.phase && !options.watermark;
+    !options.spectral &&
+    !options.humanizer &&
+    !options.phase &&
+    !options.watermark &&
+    !options.mastering;
 
   const submit = async () => {
     if (!file || submitting) return;

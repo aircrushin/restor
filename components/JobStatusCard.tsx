@@ -37,6 +37,7 @@ const STAGES: StageCopy[] = [
   { id: "phase", label: "Phase entropy" },
   { id: "watermark", label: "Wash watermark" },
   { id: "loudness", label: "Match loudness" },
+  { id: "mastering", label: "Mastering" },
   { id: "writing", label: "Encode WAV" },
   { id: "done", label: "Done" },
 ];

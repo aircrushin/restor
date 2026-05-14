@@ -63,6 +63,7 @@ function parseOptions(raw: string | null): JobOptions {
     humanizer: true,
     phase: true,
     watermark: false,
+    mastering: false,
     intensity: 0.6,
   };
   if (!raw) return fallback;
@@ -73,6 +74,7 @@ function parseOptions(raw: string | null): JobOptions {
       humanizer: parsed.humanizer ?? fallback.humanizer,
       phase: parsed.phase ?? fallback.phase,
       watermark: parsed.watermark ?? fallback.watermark,
+      mastering: parsed.mastering ?? fallback.mastering,
       intensity: clamp01(parsed.intensity ?? fallback.intensity),
     };
   } catch {

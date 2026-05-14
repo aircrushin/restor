@@ -155,6 +155,15 @@ export const dictionaries = {
       clear: "clear",
     },
     options: {
+      mastering: {
+        eyebrow: "ONE-CLICK · MASTER",
+        label: "Clip-safe mastering",
+        description: "Set release-ready level with conservative peak protection.",
+        detail:
+          "Adds light glue compression, controlled loudness lift, and a -1 dBFS peak ceiling so the output stays clean instead of distorted.",
+        enabled: "on",
+        disabled: "off",
+      },
       modules: [
         {
           id: "spectral",
@@ -222,6 +231,7 @@ export const dictionaries = {
         { id: "phase", label: "Phase entropy" },
         { id: "watermark", label: "Detail refine" },
         { id: "loudness", label: "Match loudness" },
+        { id: "mastering", label: "Mastering" },
         { id: "writing", label: "Encode WAV" },
         { id: "done", label: "Done" },
       ],
@@ -363,6 +373,15 @@ export const dictionaries = {
       clear: "清除",
     },
     options: {
+      mastering: {
+        eyebrow: "一键 · 母带",
+        label: "防削波母带",
+        description: "自动整理响度和峰值，让输出更接近发布状态。",
+        detail:
+          "使用轻量胶合压缩、保守响度提升和 -1 dBFS 峰值上限；没有足够余量时会优先保持干净，不硬推到失真。",
+        enabled: "已开",
+        disabled: "关闭",
+      },
       modules: [
         {
           id: "spectral",
@@ -429,6 +448,7 @@ export const dictionaries = {
         { id: "phase", label: "空间增强" },
         { id: "watermark", label: "细节精修" },
         { id: "loudness", label: "响度匹配" },
+        { id: "mastering", label: "母带处理" },
         { id: "writing", label: "编码 WAV" },
         { id: "done", label: "完成" },
       ],

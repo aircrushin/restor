@@ -13,6 +13,14 @@ type ModuleCopy = {
 };
 
 type Copy = {
+  mastering: {
+    eyebrow: string;
+    label: string;
+    description: string;
+    detail: string;
+    enabled: string;
+    disabled: string;
+  };
   modules: readonly ModuleCopy[];
   intensityLabel: string;
   intensityHelp: string;
@@ -53,6 +61,15 @@ const MODULES: ModuleCopy[] = [
 ];
 
 const defaultCopy: Copy = {
+  mastering: {
+    eyebrow: "ONE-CLICK · MASTER",
+    label: "Clip-safe mastering",
+    description: "Set release-ready level with conservative peak protection.",
+    detail:
+      "Adds light glue compression, controlled loudness lift, and a -1 dBFS peak ceiling so the output stays clean instead of distorted.",
+    enabled: "on",
+    disabled: "off",
+  },
   modules: MODULES,
   intensityLabel: "GLOBAL · INTENSITY",
   intensityHelp: "How aggressive each module should be",
@@ -71,9 +88,46 @@ type Props = {
 export function ProcessingOptions({ value, onChange, disabled = false, copy = defaultCopy }: Props) {
   const set = <K extends keyof JobOptions>(key: K, v: JobOptions[K]) =>
     onChange({ ...value, [key]: v });
+  const masteringEnabled = value.mastering ?? false;
 
   return (
     <div className={disabled ? "opacity-60 pointer-events-none" : ""}>
+      <button
+        type="button"
+        onClick={() => set("mastering", !masteringEnabled)}
+        className={[
+          "group mb-3 w-full overflow-hidden border p-4 text-left transition-all sm:p-5",
+          "hover:border-[var(--accent)]/50 hover:bg-[var(--bg-surface)]/80",
+          masteringEnabled
+            ? "border-[var(--accent)] bg-[var(--accent-soft)]"
+            : "border-[var(--line)] bg-[var(--bg-elevated)]/60",
+        ].join(" ")}
+        aria-pressed={masteringEnabled}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-faint)] sm:tracking-[0.25em]">
+              {copy.mastering.eyebrow}
+            </div>
+            <h4 className="mt-1 text-lg font-medium text-[var(--text-primary)]">
+              {copy.mastering.label}
+            </h4>
+            <p className="mt-1 text-sm leading-snug text-[var(--text-secondary)]">
+              {copy.mastering.description}
+            </p>
+            <p className="mt-2 max-w-[62ch] text-xs leading-relaxed text-[var(--text-muted)]">
+              {copy.mastering.detail}
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-col items-end gap-2">
+            <Toggle on={masteringEnabled} />
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-faint)]">
+              {masteringEnabled ? copy.mastering.enabled : copy.mastering.disabled}
+            </span>
+          </div>
+        </div>
+      </button>
+
       <div className="grid gap-3 md:grid-cols-2">
         {copy.modules.map((m) => {
           const enabled = value[m.id];

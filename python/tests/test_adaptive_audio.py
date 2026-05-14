@@ -11,6 +11,7 @@ from processors.adaptive import (
     match_loudness,
     measure_loudness_db,
 )
+from processors.mastering import DEFAULT_PEAK_CEILING, master_audio
 from main import JobOptions, JobRecord, _run_pipeline_blocking
 
 
@@ -90,6 +91,33 @@ class AdaptiveAudioTests(unittest.TestCase):
 
         self.assertTrue(np.all(np.isfinite(matched)))
         self.assertTrue(np.array_equal(matched, silence))
+
+    def test_mastering_boosts_quiet_audio_without_clipping(self):
+        sr = 48_000
+        t = np.arange(sr, dtype=np.float32) / sr
+        quiet = (0.025 * np.sin(2 * np.pi * 220 * t)).astype(np.float32)
+
+        mastered = master_audio(quiet, sr)
+
+        self.assertGreater(measure_loudness_db(mastered, sr), measure_loudness_db(quiet, sr))
+        self.assertLessEqual(float(np.max(np.abs(mastered))), DEFAULT_PEAK_CEILING + 1e-6)
+        self.assertTrue(np.all(np.isfinite(mastered)))
+
+    def test_mastering_reins_in_hot_audio_without_sample_clipping(self):
+        sr = 48_000
+        t = np.arange(sr, dtype=np.float32) / sr
+        hot = (
+            0.7 * np.sin(2 * np.pi * 90 * t)
+            + 0.45 * np.sin(2 * np.pi * 1100 * t)
+            + 0.2 * np.sin(2 * np.pi * 6100 * t)
+        ).astype(np.float32)
+        hot = np.column_stack([hot, hot * 0.92]).astype(np.float32)
+
+        mastered = master_audio(hot, sr)
+
+        self.assertLessEqual(float(np.max(np.abs(mastered))), DEFAULT_PEAK_CEILING + 1e-6)
+        self.assertTrue(np.all(np.isfinite(mastered)))
+        self.assertEqual(mastered.shape, hot.shape)
 
     def test_wav_output_preserves_channels_subtype_and_frame_count(self):
         sr = 48_000

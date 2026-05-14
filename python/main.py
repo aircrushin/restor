@@ -37,6 +37,7 @@ from processors.adaptive import (
     measure_loudness_db,
 )
 from processors.humanizer import humanize_rhythm
+from processors.mastering import master_audio
 from processors.phase import randomize_phase
 from processors.spectral import reshape_spectrum
 from processors.watermark import wash_watermark
@@ -52,6 +53,7 @@ class JobOptions:
     humanizer: bool = True
     phase: bool = True
     watermark: bool = False
+    mastering: bool = False
     adaptive: bool = True
     loudness_match: bool = True
     intensity: float = 0.6  # 0..1 strength multiplier shared by all modules
@@ -133,6 +135,7 @@ async def process(
             humanizer=bool(opts_dict.get("humanizer", True)),
             phase=bool(opts_dict.get("phase", True)),
             watermark=bool(opts_dict.get("watermark", False)),
+            mastering=bool(opts_dict.get("mastering", False)),
             adaptive=bool(opts_dict.get("adaptive", True)),
             loudness_match=bool(opts_dict.get("loudness_match", True)),
             intensity=float(opts_dict.get("intensity", 0.6)),
@@ -276,6 +279,11 @@ def _run_pipeline_blocking(record: JobRecord) -> dict:
     record.progress = 92
     if opts.loudness_match:
         audio = match_loudness(audio, reference_audio, sr)
+
+    record.stage = "mastering"
+    record.progress = 94
+    if opts.mastering:
+        audio = master_audio(audio, sr)
 
     peak = float(np.max(np.abs(audio))) if audio.size else 0.0
     if peak > 1.0:
