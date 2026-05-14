@@ -36,8 +36,8 @@ uvicorn main:app --reload --port 8000
 ### 2. Next.js
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 Visit http://localhost:3000.
